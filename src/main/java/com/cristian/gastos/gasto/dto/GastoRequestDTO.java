@@ -10,7 +10,8 @@ import java.time.LocalDate;
  * Validaciones con Bean Validation:
  * - categoriaId: obligatorio y debe existir (validado en el servicio)
  * - monto: obligatorio, mayor a 0
- * - fecha: obligatoria, no puede ser futura
+ * - fecha: obligatoria
+ * - cantidadMeses: opcional (mínimo 1, máximo 60) para repetir en cuotas/meses consecutivos.
  */
 public class GastoRequestDTO {
 
@@ -27,8 +28,11 @@ public class GastoRequestDTO {
     private BigDecimal monto;
 
     @NotNull(message = "La fecha es obligatoria")
-    @PastOrPresent(message = "La fecha no puede ser futura")
     private LocalDate fecha;
+
+    @Min(value = 1, message = "Debe ser al menos 1 mes")
+    @Max(value = 60, message = "No se puede repetir más de 60 meses")
+    private Integer cantidadMeses = 1;
 
     public GastoRequestDTO() {}
 
@@ -43,4 +47,7 @@ public class GastoRequestDTO {
 
     public LocalDate getFecha() { return fecha; }
     public void setFecha(LocalDate fecha) { this.fecha = fecha; }
+
+    public Integer getCantidadMeses() { return cantidadMeses; }
+    public void setCantidadMeses(Integer cantidadMeses) { this.cantidadMeses = cantidadMeses; }
 }

@@ -136,5 +136,8 @@ public class GastoViewController {
         model.addAttribute("totalMes", reporteService.obtenerTotalMes(mes));
         model.addAttribute("balance", reporteService.obtenerBalance(mes));
         model.addAttribute("categorias", categoriaRepository.findAll());
+        if (!model.containsAttribute("nuevaCategoriaForm")) {
+            model.addAttribute("nuevaCategoriaForm", new com.cristian.gastos.categoria.dto.CategoriaRequestDTO());
+        }
     }
 }

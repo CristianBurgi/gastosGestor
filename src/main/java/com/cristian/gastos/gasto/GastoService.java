@@ -28,9 +28,27 @@ public class GastoService {
 
     public GastoResponseDTO crear(GastoRequestDTO dto) {
         Categoria categoria = resolverCategoria(dto.getCategoriaId());
-        Gasto gasto = new Gasto(categoria, dto.getDescripcion(),
-                dto.getMonto(), dto.getFecha());
-        return GastoResponseDTO.from(gastoRepository.save(gasto));
+        int repeticiones = (dto.getCantidadMeses() != null && dto.getCantidadMeses() > 1) ? dto.getCantidadMeses() : 1;
+
+        if (repeticiones == 1) {
+            Gasto gasto = new Gasto(categoria, dto.getDescripcion(), dto.getMonto(), dto.getFecha());
+            return GastoResponseDTO.from(gastoRepository.save(gasto));
+        }
+
+        List<Gasto> listaGastos = new java.util.ArrayList<>();
+        String descBase = (dto.getDescripcion() != null && !dto.getDescripcion().isBlank())
+                ? dto.getDescripcion().trim()
+                : "Gasto recurrente";
+
+        for (int i = 0; i < repeticiones; i++) {
+            java.time.LocalDate fechaCuota = dto.getFecha().plusMonths(i);
+            String descCuota = descBase + " (Cuota " + (i + 1) + "/" + repeticiones + ")";
+            Gasto gasto = new Gasto(categoria, descCuota, dto.getMonto(), fechaCuota);
+            listaGastos.add(gasto);
+        }
+
+        List<Gasto> guardados = gastoRepository.saveAll(listaGastos);
+        return GastoResponseDTO.from(guardados.get(0));
     }
 
     // ── Listar ───────────────────────────────────────────────────────────────

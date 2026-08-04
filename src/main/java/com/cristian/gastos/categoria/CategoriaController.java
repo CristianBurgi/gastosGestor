@@ -1,17 +1,14 @@
 package com.cristian.gastos.categoria;
 
+import com.cristian.gastos.categoria.dto.CategoriaRequestDTO;
 import com.cristian.gastos.categoria.dto.CategoriaResponseDTO;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-/**
- * Endpoint de solo lectura para listar categorías.
- * No tiene CRUD completo: las categorías son datos de referencia (seed).
- */
 @RestController
 @RequestMapping("/api/v1/categorias")
 public class CategoriaController {
@@ -31,5 +28,13 @@ public class CategoriaController {
                 .map(CategoriaResponseDTO::from)
                 .toList();
         return ResponseEntity.ok(resultado);
+    }
+
+    /** POST /api/v1/categorias → crear nueva categoría */
+    @PostMapping
+    public ResponseEntity<CategoriaResponseDTO> crear(@Valid @RequestBody CategoriaRequestDTO dto) {
+        Categoria categoria = new Categoria(dto.getNombre().trim(), dto.getTipo());
+        Categoria guardada = categoriaRepository.save(categoria);
+        return ResponseEntity.status(HttpStatus.CREATED).body(CategoriaResponseDTO.from(guardada));
     }
 }
