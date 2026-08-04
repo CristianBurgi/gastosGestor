@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.YearMonth;
 import java.util.*;
 
 @Service
@@ -115,5 +116,33 @@ public class ReporteService {
         BigDecimal totalGastos = gastoRepository.sumMontoByMes(mes);
 
         return new BalanceMensualDTO(mes, totalIngresos, totalGastos);
+    }
+
+    /**
+     * Devuelve la evolución de ingresos y gastos en los últimos N meses
+     * finalizando en mesHasta (o el mes actual por defecto).
+     */
+    public EvolucionMensualDTO obtenerEvolucionUltimosMeses(String mesHasta, int cantidadMeses) {
+        YearMonth fin = (mesHasta != null && !mesHasta.isBlank())
+                ? YearMonth.parse(mesHasta)
+                : YearMonth.now();
+
+        List<String> meses = new ArrayList<>();
+        List<BigDecimal> ingresos = new ArrayList<>();
+        List<BigDecimal> gastos = new ArrayList<>();
+
+        for (int i = cantidadMeses - 1; i >= 0; i--) {
+            YearMonth ym = fin.minusMonths(i);
+            String mesStr = ym.toString();
+            meses.add(mesStr);
+
+            BigDecimal totalIngreso = ingresoRepository.sumMontoByMes(mesStr);
+            ingresos.add(totalIngreso != null ? totalIngreso : BigDecimal.ZERO);
+
+            BigDecimal totalGasto = gastoRepository.sumMontoByMes(mesStr);
+            gastos.add(totalGasto != null ? totalGasto : BigDecimal.ZERO);
+        }
+
+        return new EvolucionMensualDTO(meses, ingresos, gastos);
     }
 }

@@ -110,4 +110,5 @@ V2__crear_tabla_gastos.sql
 - [x] **Fase 2** — CRUD de gastos e ingresos (API REST)
 - [x] **Fase 3** — Frontend con Thymeleaf (Gastos e Ingresos)
 - [x] **Fase 4** — Reportes y balance (Backend / API REST)
-- [ ] **Fase 5** — Vista Web Dashboard / Reportes (/reportes)
+- [x] **Fase 5** — Vista Web Dashboard / Reportes (/reportes)
+- [x] **Fase 6** — Gráficos de evolución con Chart.js (/reportes)

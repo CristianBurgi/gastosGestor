@@ -56,4 +56,15 @@ public class ReporteController {
             @RequestParam String mes) {
         return ResponseEntity.ok(reporteService.obtenerBalance(mes));
     }
+
+    /**
+     * GET /api/v1/reportes/evolucion?mesHasta=2026-08&meses=6
+     * Devuelve la evolución de ingresos y gastos de los últimos N meses.
+     */
+    @GetMapping("/evolucion")
+    public ResponseEntity<EvolucionMensualDTO> obtenerEvolucion(
+            @RequestParam(required = false) String mesHasta,
+            @RequestParam(defaultValue = "6") int meses) {
+        return ResponseEntity.ok(reporteService.obtenerEvolucionUltimosMeses(mesHasta, meses));
+    }
 }
