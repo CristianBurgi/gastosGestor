@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{layout :: head('Gastos Mensuales')}"></head>
+<body>
+
+<nav th:replace="~{layout :: navbar('gastos')}"></nav>
+
+<div class="container pb-5">
+
+    <!-- Fila de Selección de Mes y Alertas -->
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <h2 class="h4 mb-0 fw-bold"><i class="bi bi-receipt me-2 text-primary"></i>Gastos del Mes</h2>
+        <form method="get" action="/gastos" class="d-flex align-items-center gap-2">
+            <label for="mesInput" class="form-label mb-0 fw-semibold">Seleccionar mes:</label>
+            <input type="month" id="mesInput" name="mes" th:value="${mesSeleccionado}"
+                   class="form-control form-control-sm" style="width: 170px;" onchange="this.form.submit()">
+        </form>
+    </div>
+
+    <!-- Mensaje de éxito -->
+    <div th:if="${mensajeExito}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-check-circle-fill me-2"></i><span th:text="${mensajeExito}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <!-- Cards de Resumen Superior -->
+    <div class="row g-3 mb-4">
+        <!-- Balance Card (Estilo Condicional con Thymeleaf th:classappend) -->
+        <div class="col-md-6 col-lg-6">
+            <div class="card card-custom p-3 border-2"
+                 th:classappend="${balance.estado.name() == 'POSITIVO' ? 'balance-card-positiva' : (balance.estado.name() == 'NEGATIVO' ? 'balance-card-negativa' : 'balance-card-neutra')}">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="fw-bold text-uppercase small"><i class="bi bi-piggy-bank me-1"></i>Balance Mensual</span>
+                    <span class="badge rounded-pill px-3 py-1"
+                          th:classappend="${balance.estado.name() == 'POSITIVO' ? 'bg-success' : (balance.estado.name() == 'NEGATIVO' ? 'bg-danger' : 'bg-secondary')}"
+                          th:text="${balance.estado}">POSITIVO</span>
+                </div>
+                <div class="row text-center my-1">
+                    <div class="col-4">
+                        <small class="d-block text-muted">Ingresos</small>
+                        <strong class="fs-6 text-success" th:text="${'$' + #numbers.formatDecimal(balance.totalIngresos, 1, 'POINT', 2, 'COMMA')}">$0,00</strong>
+                    </div>
+                    <div class="col-4">
+                        <small class="d-block text-muted">Gastos</small>
+                        <strong class="fs-6 text-danger" th:text="${'$' + #numbers.formatDecimal(balance.totalGastos, 1, 'POINT', 2, 'COMMA')}">$0,00</strong>
+                    </div>
+                    <div class="col-4">
+                        <small class="d-block text-muted">Diferencia</small>
+                        <strong class="fs-5" th:text="${'$' + #numbers.formatDecimal(balance.balance, 1, 'POINT', 2, 'COMMA')}">$0,00</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Totales de Gastos (Fijo vs Variable) -->
+        <div class="col-md-6 col-lg-6">
+            <div class="card card-custom p-3 bg-white">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="fw-bold text-uppercase small text-muted"><i class="bi bi-pie-chart me-1"></i>Desglose de Gastos</span>
+                    <span class="fs-5 fw-bold text-dark" th:text="${'$' + #numbers.formatDecimal(totalMes.totalGeneral, 1, 'POINT', 2, 'COMMA')}">$0,00</span>
+                </div>
+                <div class="row text-center my-1">
+                    <div class="col-6 border-end">
+                        <small class="d-block text-muted">Fijos</small>
+                        <strong class="fs-6 text-primary" th:text="${'$' + #numbers.formatDecimal(totalMes.totalFijo, 1, 'POINT', 2, 'COMMA')}">$0,00</strong>
+                    </div>
+                    <div class="col-6">
+                        <small class="d-block text-muted">Variables</small>
+                        <strong class="fs-6 text-warning-emphasis" th:text="${'$' + #numbers.formatDecimal(totalMes.totalVariable, 1, 'POINT', 2, 'COMMA')}">$0,00</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Formulario Cargar/Editar Gasto -->
+        <div class="col-lg-4">
+            <div class="card card-custom p-4 bg-white">
+                <h5 class="card-title fw-bold mb-3" th:text="${editId != null ? 'Editar Gasto' : 'Nuevo Gasto'}">Nuevo Gasto</h5>
+                
+                <form th:action="${editId != null ? '/gastos/actualizar/' + editId : '/gastos/guardar'}"
+                      th:object="${gastoForm}" method="post">
+                    
+                    <input type="hidden" name="mesActual" th:value="${mesSeleccionado}">
+
+                    <!-- Categoría Dropdown -->
+                    <div class="mb-3">
+                        <label for="categoriaId" class="form-label small fw-semibold">Categoría</label>
+                        <select id="categoriaId" th:field="*{categoriaId}" class="form-select form-select-sm"
+                                th:classappend="${#fields.hasErrors('categoriaId') ? 'is-invalid' : ''}">
+                            <option value="">-- Seleccionar categoría --</option>
+                            <option th:each="cat : ${categorias}"
+                                    th:value="${cat.id}"
+                                    th:text="${cat.nombre + ' (' + cat.tipo + ')'}">Alquiler</option>
+                        </select>
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('categoriaId')}" th:errors="*{categoriaId}">Error categoría</div>
+                    </div>
+
+                    <!-- Descripción -->
+                    <div class="mb-3">
+                        <label for="descripcion" class="form-label small fw-semibold">Descripción</label>
+                        <input type="text" id="descripcion" th:field="*{descripcion}"
+                               class="form-control form-control-sm" placeholder="ej. Alquiler o Supermercado"
+                               th:classappend="${#fields.hasErrors('descripcion') ? 'is-invalid' : ''}">
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('descripcion')}" th:errors="*{descripcion}">Error descripción</div>
+                    </div>
+
+                    <!-- Monto -->
+                    <div class="mb-3">
+                        <label for="monto" class="form-label small fw-semibold">Monto ($)</label>
+                        <input type="number" step="0.01" id="monto" th:field="*{monto}"
+                               class="form-control form-control-sm" placeholder="0.00"
+                               th:classappend="${#fields.hasErrors('monto') ? 'is-invalid' : ''}">
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('monto')}" th:errors="*{monto}">Error monto</div>
+                    </div>
+
+                    <!-- Fecha -->
+                    <div class="mb-3">
+                        <label for="fecha" class="form-label small fw-semibold">Fecha</label>
+                        <input type="date" id="fecha" th:field="*{fecha}"
+                               class="form-control form-control-sm"
+                               th:classappend="${#fields.hasErrors('fecha') ? 'is-invalid' : ''}">
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('fecha')}" th:errors="*{fecha}">Error fecha</div>
+                    </div>
+
+                    <!-- Botones -->
+                    <div class="d-grid gap-2 mt-4">
+                        <button type="submit" class="btn btn-primary btn-sm fw-semibold">
+                            <i class="bi bi-check-lg me-1"></i><span th:text="${editId != null ? 'Guardar Cambios' : 'Registrar Gasto'}">Registrar Gasto</span>
+                        </button>
+                        <a th:if="${editId != null}" th:href="@{/gastos(mes=${mesSeleccionado})}" class="btn btn-outline-secondary btn-sm">Cancelar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Tabla de Gastos -->
+        <div class="col-lg-8">
+            <div class="card card-custom p-3 bg-white">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0 text-sm">
+                        <thead class="table-light">
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Categoría</th>
+                            <th>Descripción</th>
+                            <th class="text-end">Monto</th>
+                            <th class="text-center" style="width: 100px;">Acciones</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="gasto : ${gastos}">
+                            <td class="small text-muted" th:text="${#temporals.format(gasto.fecha, 'dd/MM/yyyy')}">01/08/2026</td>
+                            <td>
+                                <span class="badge bg-light text-dark border" th:text="${gasto.categoriaNombre}">Alquiler</span>
+                            </td>
+                            <td th:text="${gasto.descripcion ?: '-'}">Alquiler agosto</td>
+                            <td class="text-end fw-bold text-dark" th:text="${'$' + #numbers.formatDecimal(gasto.monto, 1, 'POINT', 2, 'COMMA')}">$85.000,00</td>
+                            <td class="text-center">
+                                <div class="btn-group btn-group-sm">
+                                    <a th:href="@{/gastos(mes=${mesSeleccionado}, editId=${gasto.id})}"
+                                       class="btn btn-outline-primary py-0 px-2" title="Editar">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </a>
+                                    <form th:action="@{/gastos/eliminar/{id}(id=${gasto.id}, mes=${mesSeleccionado})}" method="post" class="d-inline">
+                                        <button type="submit" class="btn btn-outline-danger py-0 px-2" title="Eliminar"
+                                                onclick="return confirm('¿Seguro que querés eliminar este gasto?')">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(gastos)}">
+                            <td colspan="5" class="text-center text-muted py-4">
+                                <i class="bi bi-inbox fs-4 d-block mb-1"></i>
+                                No hay gastos registrados para este mes.
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

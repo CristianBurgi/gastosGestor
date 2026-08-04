@@ -1,0 +1,4 @@
+# Flyway: este archivo es un placeholder para que Git rastree la carpeta.
+# Las migraciones reales se agregarán en fases posteriores.
+# Formato de nombre: V{version}__{descripcion}.sql
+# Ejemplo: V1__crear_tabla_categorias.sql

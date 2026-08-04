@@ -1,0 +1,70 @@
+# ==========================================
+# Java / Maven
+# ==========================================
+target/
+*.class
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# ==========================================
+# Spring Boot
+# ==========================================
+*.log
+spring-shell.log
+
+# ==========================================
+# IntelliJ IDEA
+# ==========================================
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/modules.xml
+
+# ==========================================
+# Eclipse / STS
+# ==========================================
+.project
+.classpath
+.settings/
+.springBeans
+.sts4-cache/
+
+# ==========================================
+# VS Code
+# ==========================================
+.vscode/
+!.vscode/settings.json
+!.vscode/extensions.json
+
+# ==========================================
+# OS / Sistema
+# ==========================================
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ==========================================
+# Secretos y configuración local
+# ==========================================
+# No versionar credenciales locales
+application-local.properties
+.env
+.env.local
+
+# ==========================================
+# Flyway (generados por herramientas)
+# ==========================================
+# (las migraciones SÍ se versionan)
+
+# ==========================================
+# Docker (por si se agrega en el futuro)
+# ==========================================
+docker-compose.override.yml
