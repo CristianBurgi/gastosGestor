@@ -85,7 +85,8 @@
                     <!-- Fecha -->
                     <div class="mb-3">
                         <label for="fecha" class="form-label small fw-semibold">Fecha</label>
-                        <input type="date" id="fecha" th:field="*{fecha}"
+                        <input type="date" id="fecha" name="fecha"
+                               th:value="${ingresoForm.fecha != null ? ingresoForm.fecha : fechaHoy}"
                                class="form-control form-control-sm"
                                th:max="${fechaHoy}"
                                th:classappend="${#fields.hasErrors('fecha') ? 'is-invalid' : ''}">

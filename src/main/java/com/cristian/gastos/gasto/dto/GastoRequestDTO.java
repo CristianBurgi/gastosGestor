@@ -2,16 +2,13 @@ package com.cristian.gastos.gasto.dto;
 
 import jakarta.validation.constraints.*;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
 /**
  * DTO de entrada para crear o editar un Gasto.
- * Validaciones con Bean Validation:
- * - categoriaId: obligatorio y debe existir (validado en el servicio)
- * - monto: obligatorio, mayor a 0
- * - fecha: obligatoria
- * - cantidadMeses: opcional (mínimo 1, máximo 60) para repetir en cuotas/meses consecutivos.
  */
 public class GastoRequestDTO {
 
@@ -29,7 +26,8 @@ public class GastoRequestDTO {
 
     @NotNull(message = "La fecha es obligatoria")
     @PastOrPresent(message = "La fecha inicial no puede ser futura")
-    private LocalDate fecha;
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+    private LocalDate fecha = LocalDate.now();
 
     @Min(value = 1, message = "Debe ser al menos 1 mes")
     @Max(value = 60, message = "No se puede repetir más de 60 meses")

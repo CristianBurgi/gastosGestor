@@ -2,6 +2,8 @@ package com.cristian.gastos.ingreso.dto;
 
 import jakarta.validation.constraints.*;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
@@ -22,7 +24,8 @@ public class IngresoRequestDTO {
 
     @NotNull(message = "La fecha es obligatoria")
     @PastOrPresent(message = "La fecha no puede ser futura")
-    private LocalDate fecha;
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+    private LocalDate fecha = LocalDate.now();
 
     public IngresoRequestDTO() {}
 
