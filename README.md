@@ -112,3 +112,4 @@ V2__crear_tabla_gastos.sql
 - [x] **Fase 4** — Reportes y balance (Backend / API REST)
 - [x] **Fase 5** — Vista Web Dashboard / Reportes (/reportes)
 - [x] **Fase 6** — Gráficos de evolución con Chart.js (/reportes)
+- [x] **Fase 7** — Deploy en Railway (Despliegue público en la nube con PostgreSQL)
