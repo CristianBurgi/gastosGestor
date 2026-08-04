@@ -87,6 +87,7 @@
                         <label for="fecha" class="form-label small fw-semibold">Fecha</label>
                         <input type="date" id="fecha" th:field="*{fecha}"
                                class="form-control form-control-sm"
+                               th:attr="max=${#temporals.format(T(java.time.LocalDate).now(), 'yyyy-MM-dd')}"
                                th:classappend="${#fields.hasErrors('fecha') ? 'is-invalid' : ''}">
                         <div class="invalid-feedback" th:if="${#fields.hasErrors('fecha')}" th:errors="*{fecha}">Error fecha</div>
                     </div>

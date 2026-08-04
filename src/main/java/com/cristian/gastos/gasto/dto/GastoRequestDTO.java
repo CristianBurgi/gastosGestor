@@ -28,6 +28,7 @@ public class GastoRequestDTO {
     private BigDecimal monto;
 
     @NotNull(message = "La fecha es obligatoria")
+    @PastOrPresent(message = "La fecha inicial no puede ser futura")
     private LocalDate fecha;
 
     @Min(value = 1, message = "Debe ser al menos 1 mes")
