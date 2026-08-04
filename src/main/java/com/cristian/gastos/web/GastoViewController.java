@@ -132,6 +132,7 @@ public class GastoViewController {
 
     private void cargarAtributosComunes(Model model, String mes) {
         model.addAttribute("mesSeleccionado", mes);
+        model.addAttribute("fechaHoy", LocalDate.now());
         model.addAttribute("gastos", gastoService.listar(mes));
         model.addAttribute("totalMes", reporteService.obtenerTotalMes(mes));
         model.addAttribute("balance", reporteService.obtenerBalance(mes));

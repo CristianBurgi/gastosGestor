@@ -126,6 +126,7 @@ public class IngresoViewController {
 
     private void cargarAtributosComunes(Model model, String mes) {
         model.addAttribute("mesSeleccionado", mes);
+        model.addAttribute("fechaHoy", LocalDate.now());
         model.addAttribute("ingresos", ingresoService.listar(mes));
         model.addAttribute("balance", reporteService.obtenerBalance(mes));
     }
